@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            padding: 10px;
+        }
+
+        nav {
+            width: 60%;
+            height: 100px;
+            margin: auto;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            background-color: rgb(96, 117, 91);
+        }
+
+        .space-right {
+            width: 150px;
+            height: 80px;
+            background-color: rgb(96, 117, 91);
+            color: white;
+            border-radius: 5px;
+
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+        }
+
+        .start-btn {
+            width: 120px;
+            height: 60px;
+            color: white;
+            font-size: 20px;
+            background-color: rgb(129, 156, 122);
+            border: 4px rgb(130, 160, 134) solid;
+            border-radius: 5px;
+
+            cursor: pointer;
+        }
+
+        .outside {
+            width: 240px;
+            background-color: rgb(218, 233, 214);
+
+            margin: auto;
+
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+
+            border-radius: 5px;
+        }
+
+        .outside div {
+            width: 100px;
+            height: 100px;
+            margin: 10px 10px;
+            cursor: pointer;
+
+            border-radius: 5px;
+
+        }
+
+        .ans {
+            margin: 10px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <button class="start-btn">Start</button>
+        <div class="space-right">
+            <div class="time">剩餘時間 : </div>
+            <div class="score">分數 : </div>
+        </div>
+    </nav>
+    <div class="outside"></div>
+
+    <script>
+        const start = document.querySelector('.start-btn')
+        const score = document.querySelector('.score')
+        const time = document.querySelector('.time')
+        const outside = document.querySelector('.outside')
+        var point
+        var timer
+        var difficulty = 2
+        var opacity = 0.6
+        var wrong = 0
+
+
+        function startGame() {
+            outside.innerHTML = ''
+            var ans = Math.floor(Math.random() * (difficulty ** 2))
+            // 做隨機亂數遊戲～～
+            var r = Math.floor(Math.random() * 256)
+            var g = Math.floor(Math.random() * 256)
+            var b = Math.floor(Math.random() * 256)
+            outside.style.width = (difficulty * 120) + 'px'
+
+            // 產生方塊
+            for (let index = 0; index < (difficulty ** 2); index++) {
+                if (index == ans) {
+                    outside.innerHTML += '<div onclick="ansCheck(1)" style="background-color:rgb(' + r + ',' + g + ',' + b + ');opacity: ' + opacity + ';" ></div>'
+                } else {
+                    outside.innerHTML += '<div onclick="ansCheck(0)" style="background-color:rgb(' + r + ',' + g + ',' + b + ');" ></div>'
+                }
+            }
+        }
+
+        // 先假設 點到正確的方塊他會傳 數字1進來，點到錯誤的方塊，他會傳數字 0 進來
+        function ansCheck(guess) {
+            //點到正確的方塊或錯誤的方塊
+            if (guess == 1) {
+                // 做正確的事
+                point++
+                score.innerHTML = '分數 : ' + point
+                // 重設遊戲到下一題
+                if (point <= 3) {
+                    difficulty = 2
+                } else if (point <= 6) {
+                    difficulty = 3
+                    opacity = 0.7
+                } else if (point <= 9) {
+                    difficulty = 4
+                } else if (point <= 12) {
+                    difficulty = 5
+                    opacity = 0.8
+                } else {
+                    difficulty = 6
+                    opacity = 0.85
+                }
+                startGame()
+            } else {
+                // 做錯誤的事
+                wrong++
+                if (wrong < 3) {
+                    startGame()
+                } else {
+                    stopGame()
+                    wrong = 0
+                }
+            }
+        }
+
+
+
+        function stopGame() {
+            clearInterval(timer)
+            timer = setInterval(start, 1000)
+            outside.innerHTML = ''
+            alert('遊戲結束，你的分數為' + point)
+            score.innerHTML = '分數 : ' + ''
+        }
+
+        start.onclick = function () {
+            //停止上一輪的計時器(以防上一回合是突然中斷)
+            clearInterval(timer)
+            var times = 20 //重設時間
+            point = 0 //分數歸零
+            wrong = 0 //錯誤次數歸零
+
+            //難易度回到初始值
+            difficulty = 2
+            opacity = 0.6
+            time.innerHTML = '剩餘時間 : ' + times
+
+            timer = setInterval(function () {
+                times--;
+                time.innerHTML = '剩餘時間 : ' + times
+                if (times == 0) {
+                    stopGame()
+                }
+            }, 1000)
+            startGame()
+        }
+
+    </script>
+</body>
+
+</html>
